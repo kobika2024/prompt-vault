@@ -3,66 +3,15 @@ import type { Prompt } from '@/types'
 
 // 🔧 SETUP: Replace these with your Supabase project values
 // Get them from: https://supabase.com → Project Settings → API
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co'
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-anon-key'
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const IS_PLACEHOLDER = !SUPABASE_URL || SUPABASE_URL.includes('placeholder')
 
-export async function getAllPrompts(): Promise<Prompt[]> {
-  const { data, error } = await supabase
-    .from('prompts')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) {
-    console.error('Error fetching prompts:', error)
-    return MOCK_PROMPTS
-  }
-  return data as Prompt[]
-}
-
-export async function getPromptById(id: string): Promise<Prompt | null> {
-  const { data, error } = await supabase
-    .from('prompts')
-    .select('*')
-    .eq('id', id)
-    .single()
-
-  if (error) {
-    return MOCK_PROMPTS.find(p => p.id === id) ?? null
-  }
-  return data as Prompt
-}
-
-export async function getPromptsByCategory(category: string): Promise<Prompt[]> {
-  const { data, error } = await supabase
-    .from('prompts')
-    .select('*')
-    .eq('category', category)
-    .order('created_at', { ascending: false })
-
-  if (error) return []
-  return data as Prompt[]
-}
-
-export async function insertPrompt(prompt: Omit<Prompt, 'id' | 'created_at'>): Promise<Prompt | null> {
-  const { data, error } = await supabase
-    .from('prompts')
-    .insert(prompt)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error inserting prompt:', error)
-    return null
-  }
-  return data as Prompt
-}
-
-export async function deletePrompt(id: string): Promise<boolean> {
-  const { error } = await supabase.from('prompts').delete().eq('id', id)
-  return !error
-}
+export const supabase = createClient(
+  SUPABASE_URL || 'https://placeholder.supabase.co',
+  SUPABASE_ANON_KEY || 'placeholder-anon-key'
+)
 
 // Mock data shown while Supabase is not yet connected
 const MOCK_PROMPTS: Prompt[] = [
@@ -131,3 +80,76 @@ Format as actionable steps, not advice.`,
     created_at: new Date().toISOString(),
   },
 ]
+
+// In-memory store used when Supabase is not yet configured
+const devStore: Prompt[] = [...MOCK_PROMPTS]
+
+export async function getAllPrompts(): Promise<Prompt[]> {
+  if (IS_PLACEHOLDER) return [...devStore].reverse()
+
+  const { data, error } = await supabase
+    .from('prompts')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching prompts:', error)
+    return [...devStore].reverse()
+  }
+  return data as Prompt[]
+}
+
+export async function getPromptById(id: string): Promise<Prompt | null> {
+  if (IS_PLACEHOLDER) return devStore.find(p => p.id === id) ?? null
+
+  const { data, error } = await supabase
+    .from('prompts')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) return devStore.find(p => p.id === id) ?? null
+  return data as Prompt
+}
+
+export async function getPromptsByCategory(category: string): Promise<Prompt[]> {
+  if (IS_PLACEHOLDER) return devStore.filter(p => p.category === category)
+
+  const { data, error } = await supabase
+    .from('prompts')
+    .select('*')
+    .eq('category', category)
+    .order('created_at', { ascending: false })
+
+  if (error) return []
+  return data as Prompt[]
+}
+
+export async function insertPrompt(prompt: Omit<Prompt, 'id' | 'created_at'>): Promise<Prompt | null> {
+  if (IS_PLACEHOLDER) {
+    const newPrompt: Prompt = {
+      ...prompt,
+      id: `dev-${Date.now()}`,
+      created_at: new Date().toISOString(),
+    }
+    devStore.push(newPrompt)
+    return newPrompt
+  }
+
+  const { data, error } = await supabase
+    .from('prompts')
+    .insert(prompt)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error inserting prompt:', error)
+    return null
+  }
+  return data as Prompt
+}
+
+export async function deletePrompt(id: string): Promise<boolean> {
+  const { error } = await supabase.from('prompts').delete().eq('id', id)
+  return !error
+}
