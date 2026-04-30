@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ExternalLink, Tag, ArrowLeft, Image as ImageIcon, Video, FileText, Zap, Star } from 'lucide-react'
 import type { Prompt, OutputType } from '@/types'
 
@@ -29,13 +29,14 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 export default function PromptCard({ prompt }: { prompt: Prompt }) {
+  const router = useRouter()
   const categoryColor = CATEGORY_COLORS[prompt.category] ?? CATEGORY_COLORS.other
   const previewText = prompt.prompt_text.slice(0, 160) + (prompt.prompt_text.length > 160 ? '…' : '')
 
   return (
-    <Link
-      href={`/prompt/${prompt.id}`}
-      className="group block bg-[#0d1526] border border-sky-900/30 hover:border-sky-500/50 rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:shadow-sky-500/5 hover:-translate-y-0.5"
+    <div
+      onClick={() => router.push(`/prompt/${prompt.id}`)}
+      className="group cursor-pointer block bg-[#0d1526] border border-sky-900/30 hover:border-sky-500/50 rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:shadow-sky-500/5 hover:-translate-y-0.5"
     >
       {/* שורה עליונה */}
       <div className="flex items-start justify-between gap-3 mb-3">
@@ -91,6 +92,6 @@ export default function PromptCard({ prompt }: { prompt: Prompt }) {
           צפה בפרומפט <ArrowLeft size={10} />
         </span>
       </div>
-    </Link>
+    </div>
   )
 }
