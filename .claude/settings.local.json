@@ -6,7 +6,19 @@
       "Bash(cd /tmp)",
       "Bash(npx create-next-app@latest prompt-vault --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(gh repo *)",
+      "mcp__Claude_Preview__preview_start",
+      "Read(//c/Users/קובי/.claude/skills/**)",
+      "Bash(mkdir -p ~/.claude/skills)",
+      "Bash(vercel deploy *)",
+      "WebFetch(domain:prompt-vault-sandy.vercel.app)",
+      "Bash(vercel project *)",
+      "Bash(vercel link *)",
+      "Bash(vercel env *)",
+      "Bash(npm run *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

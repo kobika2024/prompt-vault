@@ -1,18 +1,19 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist_Mono } from 'next/font/google'
+import { Rubik } from 'next/font/google'
 import './globals.css'
 
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
+const rubik = Rubik({ variable: '--font-rubik', subsets: ['latin', 'hebrew'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'PromptVault',
-  description: 'Personal library of amazing AI prompts',
+  description: 'הספרייה האישית שלי לפרומפטים מדהימים',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="he" dir="rtl" className={`${rubik.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full bg-[#0f1117] text-slate-200">{children}</body>
     </html>
   )

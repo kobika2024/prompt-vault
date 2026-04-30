@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ExternalLink, Tag, ArrowRight, Image as ImageIcon, Video, FileText, Zap, Star } from 'lucide-react'
+import { ExternalLink, Tag, ArrowLeft, Image as ImageIcon, Video, FileText, Zap, Star } from 'lucide-react'
 import type { Prompt, OutputType } from '@/types'
 
 const OUTPUT_ICONS: Record<OutputType, React.ReactNode> = {
@@ -11,6 +11,10 @@ const OUTPUT_ICONS: Record<OutputType, React.ReactNode> = {
   skill: <Star size={12} />,
   routine: <Zap size={12} />,
   other: <FileText size={12} />,
+}
+
+const OUTPUT_LABELS: Record<OutputType, string> = {
+  text: 'טקסט', image: 'תמונה', video: 'סרטון', skill: 'סקיל', routine: 'רוטינה', other: 'אחר',
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -33,68 +37,58 @@ export default function PromptCard({ prompt }: { prompt: Prompt }) {
       href={`/prompt/${prompt.id}`}
       className="group block bg-[#0d1526] border border-sky-900/30 hover:border-sky-500/50 rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:shadow-sky-500/5 hover:-translate-y-0.5"
     >
-      {/* Top row */}
+      {/* שורה עליונה */}
       <div className="flex items-start justify-between gap-3 mb-3">
         <h3 className="text-white text-sm font-semibold leading-tight group-hover:text-sky-300 transition-colors line-clamp-2">
           {prompt.title}
         </h3>
         <span className={`shrink-0 flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${categoryColor}`}>
           {OUTPUT_ICONS[prompt.output_type]}
-          <span className="capitalize">{prompt.output_type}</span>
+          <span>{OUTPUT_LABELS[prompt.output_type]}</span>
         </span>
       </div>
 
-      {/* Prompt preview */}
+      {/* תצוגה מקדימה של הפרומפט */}
       <div className="bg-[#0b1220] rounded-lg p-3 mb-3 border border-sky-900/20">
-        <p className="text-slate-400 text-xs font-mono leading-relaxed line-clamp-3">
+        <p className="text-slate-400 text-xs font-mono leading-relaxed line-clamp-3" dir="auto">
           {previewText}
         </p>
       </div>
 
-      {/* Output preview (image only) */}
+      {/* תמונה */}
       {prompt.output_type === 'image' && prompt.output_url && (
         <div className="mb-3 rounded-lg overflow-hidden border border-sky-900/20 h-28">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={prompt.output_url}
-            alt="Output preview"
-            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-            onError={(e) => {
-              (e.target as HTMLImageElement).parentElement!.style.display = 'none'
-            }}
-          />
+          <img src={prompt.output_url} alt="תצוגה מקדימה" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+            onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none' }} />
         </div>
       )}
 
-      {/* Tags */}
+      {/* תגיות */}
       {prompt.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mb-3">
           {prompt.tags.slice(0, 4).map(tag => (
-            <span key={tag} className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded">
+            <span key={tag} className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded" dir="ltr">
               <Tag size={9} />
               {tag}
             </span>
           ))}
           {prompt.tags.length > 4 && (
-            <span className="text-[10px] text-slate-600">+{prompt.tags.length - 4} more</span>
+            <span className="text-[10px] text-slate-600">+{prompt.tags.length - 4} נוספות</span>
           )}
         </div>
       )}
 
-      {/* Footer */}
+      {/* פוטר */}
       <div className="flex items-center justify-between pt-2 border-t border-sky-900/20">
-        <a
-          href={prompt.source_url}
-          target="_blank"
-          rel="noopener noreferrer"
+        <a href={prompt.source_url} target="_blank" rel="noopener noreferrer"
           onClick={e => e.stopPropagation()}
-          className="flex items-center gap-1 text-[10px] text-slate-500 hover:text-sky-400 transition-colors"
-        >
+          className="flex items-center gap-1 text-[10px] text-slate-500 hover:text-sky-400 transition-colors">
           <ExternalLink size={10} />
-          <span className="truncate max-w-32">Source</span>
+          <span>מקור</span>
         </a>
         <span className="flex items-center gap-1 text-[10px] text-sky-500/60 group-hover:text-sky-400 transition-colors">
-          View prompt <ArrowRight size={10} />
+          צפה בפרומפט <ArrowLeft size={10} />
         </span>
       </div>
     </Link>
