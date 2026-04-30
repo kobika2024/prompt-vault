@@ -93,8 +93,8 @@ export async function getAllPrompts(): Promise<Prompt[]> {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error fetching prompts:', error)
-    return [...devStore].reverse()
+    console.error('[Supabase] getAllPrompts error:', JSON.stringify(error))
+    return []
   }
   return data as Prompt[]
 }
@@ -108,7 +108,10 @@ export async function getPromptById(id: string): Promise<Prompt | null> {
     .eq('id', id)
     .single()
 
-  if (error) return devStore.find(p => p.id === id) ?? null
+  if (error) {
+    console.error('[Supabase] getPromptById error:', JSON.stringify(error))
+    return null
+  }
   return data as Prompt
 }
 
