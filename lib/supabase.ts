@@ -3,8 +3,8 @@ import type { Prompt } from '@/types'
 
 // 🔧 SETUP: Replace these with your Supabase project values
 // Get them from: https://supabase.com → Project Settings → API
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+const SUPABASE_URL = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
 const IS_PLACEHOLDER = !SUPABASE_URL || SUPABASE_URL.includes('placeholder')
 
